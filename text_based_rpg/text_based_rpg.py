@@ -3,19 +3,15 @@ from pcconfig import config
 
 import pynecone as pc
 
-docs_url = "https://pynecone.io/docs/getting-started/introduction"
-filename = f"{config.app_name}/{config.app_name}.py"
 
 
 class State(pc.State):
-    """The app state."""
-
-    pass
+    ...
 
 
 def index() -> pc.Component:
     return pc.center(
-        pc.text("hi")
+        pc.button("Toggle mode",pc.icon(tag="moon"), on_click=pc.toggle_color_mode)
     )
 
 
