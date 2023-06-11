@@ -1,5 +1,8 @@
 import pynecone as pc
+import sqlite3
 import string, secrets
+
+
 class BaseState(pc.State):
     '''
     Represents the BaseState, this makes it possible in the future to create multiple States.
@@ -21,6 +24,11 @@ class LoggingState(BaseState):
         self.logs.append(f"used option {option}.")
 
 class UserInformation(BaseState):
+    name_demo: str
+    def set_name_demo(self, newname: str) -> None:
+        self.name_demo =newname.title()
+        # pc.redirect('/game/')
+
     name: str
     _name_legal: bool = False # backend var
     key1: str
@@ -33,9 +41,36 @@ class UserInformation(BaseState):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_new_key_pair()
-    def change_name(self, new_name: str):
-        self.name = new_name.title()
-        self.name_legal= True
+
+    def change_name(self, data: dict[str, str]):
+        if (name := data.get('name')):
+            self.name = name.title()
+            self.create_session()
+
+    def create_session(self) -> None:
+        '''
+        Jesse als je dit ziet. Leg aub uit hoe sqlalchemy werkt
+        '''
+        with sqlite3.connect('pynecone.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM users WHERE key1=? and key2=?;", (
+                self.key1,
+                self.key2
+            ))
+            fetch: int = cursor.fetchone()[0]
+            if fetch == 0: # user is new so create a new row
+                cursor.execute(
+                    '''
+                    INSERT INTO users VALUES(?, ?, ?);
+                    ''', (self.name, self.key1, self.key2)
+                )
+                connection.commit()
+            else: # user exists
+                ...
+            cursor.close()
+        
+                
+
 
     def generate_new_key_pair(self):
         letters = string.ascii_lowercase
