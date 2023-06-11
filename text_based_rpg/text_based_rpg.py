@@ -1,7 +1,7 @@
 """Welcome to Pynecone! This file outlines the steps to create a basic app."""
 import pynecone as pc
 from .states import *
-def debugging() -> pc.Component:
+def game() -> pc.Component:
     return pc.center(
         pc.vstack(
             pc.text("1 is " + UserInformation.key1),
@@ -43,7 +43,7 @@ def page404() -> pc.Component:
 
 # Add state and page to the app.
 app = pc.App(state=BaseState)
-app.add_page(debugging, '/logging/')
+app.add_page(game, '/game/')
 app.add_page(start_game, '/start/')
 app.add_custom_404_page(page404)
 app.compile()
