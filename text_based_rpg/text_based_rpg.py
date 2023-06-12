@@ -5,12 +5,14 @@ import pynecone as pc
 from .states import *
 
 
-@pc.route('/game/')
+@pc.route('/game/', on_load=QueryParamsParsing.verify_keys_and_cache)
 def game() -> pc.Component:
     
 
     return pc.center(
         pc.vstack(
+            pc.text("1 is " + QueryParamsParsing.key1),
+            pc.text("2 is " + QueryParamsParsing.key2),
             pc.stack(
                 pc.foreach(LoggingState.logs, lambda item: pc.text(item)),
                 width="55%",
