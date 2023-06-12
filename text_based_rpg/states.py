@@ -1,3 +1,4 @@
+from typing import Dict
 import pynecone as pc
 import sqlite3
 import string, secrets
@@ -24,13 +25,8 @@ class LoggingState(BaseState):
         self.logs.append(f"used option {option}.")
 
 class UserInformation(BaseState):
-    name_demo: str
-    def set_name_demo(self, newname: str) -> None:
-        self.name_demo =newname.title()
-        # pc.redirect('/game/')
 
     name: str
-    _name_legal: bool = False # backend var
     key1: str
     key2: str
     """
@@ -42,10 +38,20 @@ class UserInformation(BaseState):
         super().__init__(*args, **kwargs)
         self.generate_new_key_pair()
 
-    def change_name(self, data: dict[str, str]):
+    def change_name(self, data: dict[str, str]) -> pc.Component:
         if (name := data.get('name')):
             self.name = name.title()
             self.create_session()
+            # return pc.html(
+            #     f'''
+            #     <script>
+            #     localStorage.setItem('key1', '{self.key1}');
+            #     localStorage.setItem('key2', '{self.key2}');
+            #     console.log("Data saved");
+            #     </script>
+            #     '''
+            # )
+            return pc.redirect(f'/game?key1={self.key1}&key2={self.key2}')
 
     def create_session(self) -> None:
         '''
@@ -65,8 +71,6 @@ class UserInformation(BaseState):
                     ''', (self.name, self.key1, self.key2)
                 )
                 connection.commit()
-            else: # user exists
-                ...
             cursor.close()
         
                 
@@ -79,3 +83,50 @@ class UserInformation(BaseState):
         del result_str
         result_str = ''.join(secrets.choice(letters) for _ in range(64))
         self.key2 = result_str
+
+class QueryParamsParsing(BaseState):
+    def get_params(self, key: str) -> str:
+        return self.get_query_params().get(key, '')
+    
+    key1: str
+    key2: str
+    def verify_keys_and_cache(self) -> pc.event.EventSpec:
+        if (result1 := self.get_key1()):
+            return result1
+        if (result2 := self.get_key2()):
+            return result2
+    def get_key1(self) -> pc.event.EventSpec:
+        if (key1 := self.get_query_params().get('key1')): 
+            '''
+            Verify it exists
+            '''
+            with sqlite3.connect("pynecone.db") as connection:
+                cursor = connection.cursor()
+                cursor.execute("SELECT COUNT(*) FROM users WHERE key1=?;", (key1,))
+                count: int = cursor.fetchone()[0]
+                cursor.close()
+                if count != 0:
+                    self.key1 = key1
+                    return
+
+                
+        return pc.redirect('/start/')
+    
+    def get_key2(self) -> pc.event.EventSpec:
+        if (key2:= self.get_query_params().get('key2')): 
+            '''
+            Verify it exists
+            '''
+            with sqlite3.connect("pynecone.db") as connection:
+                cursor = connection.cursor()
+                cursor.execute("SELECT COUNT(*) FROM users WHERE key2=?;", (key2,))
+                count: int = cursor.fetchone()[0]
+                cursor.close()
+                if count != 0:
+                    self.key2 = key2
+                    return
+
+                
+        return pc.redirect('/start/')
+    
+    

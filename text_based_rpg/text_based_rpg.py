@@ -1,12 +1,16 @@
 """Welcome to Pynecone! This file outlines the steps to create a basic app."""
 import pynecone as pc
+
+
 from .states import *
 
+
+@pc.route('/game/')
 def game() -> pc.Component:
+    
+
     return pc.center(
         pc.vstack(
-            pc.text("1 is " + UserInformation.key1),
-            pc.text("2 is " + UserInformation.key2),
             pc.stack(
                 pc.foreach(LoggingState.logs, lambda item: pc.text(item)),
                 width="55%",
@@ -23,24 +27,25 @@ def game() -> pc.Component:
         width="100%"
     )
 def start_game() -> pc.Component:
-    if not UserInformation._name_legal:
-        return pc.stack(
-            pc.center(
-                pc.form(
-                pc.input(
-                    id='name',
-                    placeholder="Your name",
-                    on_change=UserInformation.set_name_demo
-                ),
-                on_submit=UserInformation.change_name,
-            )
+    return pc.stack(
+
+        pc.center(
+            pc.form(
+
+            pc.input(
+
+                id='name',
+                placeholder="Your name",
 
             ),
 
-            pc.divider(),
-            pc.center(
-                pc.heading("Welcome " + UserInformation.name),
-                ))
+            on_submit=UserInformation.change_name,
+
+        )
+
+        ),
+    )
+
 def page404() -> pc.Component:
     return pc.center(
         pc.heading(pc.link("This page does not exist(404)", href='https://youtu.be/xvFZjo5PgG0'))
@@ -50,7 +55,6 @@ def page404() -> pc.Component:
 # Add state and page to the app.
 app = pc.App(state=BaseState)
 
-app.add_page(game, '/game/')
 
 app.add_page(start_game, '/start/')
 
