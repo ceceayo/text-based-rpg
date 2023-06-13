@@ -1,11 +1,48 @@
-"""Welcome to Pynecone! This file outlines the steps to create a basic app."""
 import pynecone as pc
+
+
 from .states import *
+
+def loginByKeys() -> pc.Component:
+    return pc.stack(
+        pc.center(
+        pc.heading(f"Welcome to text-based-rpg!")),
+        
+        pc.center(
+
+        pc.form(
+            pc.input(
+                placeholder='key1',
+                id='key1',
+                type_='password'
+                ),
+            pc.input(
+                placeholder='key2',
+                id='key2',
+                type_='password'
+            ),
+            pc.button('Login', type_='submit',
+                _hover={
+                    'bg': 'lightgreen'
+                    
+                    
+                }
+                      ),
+            
+            pc.text("New here? ", pc.link("Start your adventure!", href='/start/')),
+            on_submit=LoginState.login
+
+        ),
+        
+    ))
+@pc.route('/game/', on_load=QueryParamsParsing.verify_keys_and_cache)
 def game() -> pc.Component:
+    
+
     return pc.center(
         pc.vstack(
-            pc.text("1 is " + UserInformation.key1),
-            pc.text("2 is " + UserInformation.key2),
+            pc.text("1 is " + QueryParamsParsing.key1),
+            pc.text("2 is " + QueryParamsParsing.key2),
             pc.stack(
                 pc.foreach(LoggingState.logs, lambda item: pc.text(item)),
                 width="55%",
@@ -22,28 +59,48 @@ def game() -> pc.Component:
         width="100%"
     )
 def start_game() -> pc.Component:
-    if not UserInformation._name_legal:
-        return pc.stack(
-            pc.center(
-                pc.input(
-                    placeholder="name here",
-                    on_change=UserInformation.change_name,
-                    width='50%',
-                ),
+    return pc.stack(
+
+        pc.center(
+            pc.form(
+            pc.heading('Welcome user', margin_bottom='10%'),
+
+            pc.input(
+
+                id='name',
+                placeholder="Your name",
+                margin_bottom='10%'
             ),
-            pc.vstack(
-                pc.heading("Welcome " + UserInformation.name)
-            )
-            )
-    return pc.heading("hello there")
+            pc.button(
+                'Start the adventure!',
+                type_='submit',
+                _hover={
+                    'bg': 'lightgreen'
+                    
+                    
+                }
+            ),
+            pc.text("Already an adventurer? ", pc.link("Log in back", href='/login/')),
+            on_submit=UserInformation.change_name,
+
+        )
+
+        ),
+    )
+
 def page404() -> pc.Component:
     return pc.center(
         pc.heading(pc.link("This page does not exist(404)", href='https://youtu.be/xvFZjo5PgG0'))
         )
 
-# Add state and page to the app.
-app = pc.App(state=BaseState)
-app.add_page(game, '/game/')
+
+app = pc.App(state=BaseState,)
+
 app.add_page(start_game, '/start/')
+
+app.add_page(loginByKeys, '/')
+
+app.add_page(loginByKeys, '/login/')
+
 app.add_custom_404_page(page404)
 app.compile()
