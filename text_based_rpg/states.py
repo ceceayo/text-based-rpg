@@ -1,4 +1,3 @@
-from typing import Dict
 import pynecone as pc
 import sqlite3
 import string, secrets
@@ -99,6 +98,11 @@ class QueryParamsParsing(BaseState):
     key1: str
     key2: str
     def verify_keys_and_cache(self) -> pc.event.EventSpec:
+        '''
+        The result will be stored in the Self object.\n
+        key1: ``self.key1``\n
+        key2: ``self.key2``
+        '''
         if (result1 := self.get_key1()):
             return result1
         if (result2 := self.get_key2()):

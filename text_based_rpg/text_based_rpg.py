@@ -1,4 +1,3 @@
-"""Welcome to Pynecone! This file outlines the steps to create a basic app."""
 import pynecone as pc
 
 
@@ -22,10 +21,19 @@ def loginByKeys() -> pc.Component:
                 id='key2',
                 type_='password'
             ),
-            pc.button('Login', type_='submit'),
+            pc.button('Login', type_='submit',
+                _hover={
+                    'bg': 'lightgreen'
+                    
+                    
+                }
+                      ),
+            
+            pc.text("New here? ", pc.link("Start your adventure!", href='/start/')),
             on_submit=LoginState.login
 
-        )
+        ),
+        
     ))
 @pc.route('/game/', on_load=QueryParamsParsing.verify_keys_and_cache)
 def game() -> pc.Component:
@@ -55,14 +63,24 @@ def start_game() -> pc.Component:
 
         pc.center(
             pc.form(
+            pc.heading('Welcome user', margin_bottom='10%'),
 
             pc.input(
 
                 id='name',
                 placeholder="Your name",
-
+                margin_bottom='10%'
             ),
-
+            pc.button(
+                'Start the adventure!',
+                type_='submit',
+                _hover={
+                    'bg': 'lightgreen'
+                    
+                    
+                }
+            ),
+            pc.text("Already an adventurer? ", pc.link("Log in back", href='/login/')),
             on_submit=UserInformation.change_name,
 
         )
@@ -76,9 +94,7 @@ def page404() -> pc.Component:
         )
 
 
-# Add state and page to the app.
-app = pc.App(state=BaseState)
-
+app = pc.App(state=BaseState,)
 
 app.add_page(start_game, '/start/')
 
