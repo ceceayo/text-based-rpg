@@ -83,10 +83,18 @@ class UserInformation(BaseState):
         del result_str
         result_str = ''.join(secrets.choice(letters) for _ in range(64))
         self.key2 = result_str
+        
+class LoginState(BaseState):
+    def login(self, data: dict[str, str]) -> pc.event.EventSpec:
+        if (key1 := data.get('key1')) and len(key1) != 64:
+            return pc.window_alert('Error invalid key1')
+
+        if (key2 := data.get('key2')) and len(key2) != 64:
+            return pc.window_alert("Error invalid key2")
+        return pc.redirect(f'/game/?key1={key1}&key2={key2}')
+        
 
 class QueryParamsParsing(BaseState):
-    def get_params(self, key: str) -> str:
-        return self.get_query_params().get(key, '')
     
     key1: str
     key2: str

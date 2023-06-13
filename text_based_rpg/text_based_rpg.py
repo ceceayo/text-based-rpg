@@ -4,7 +4,29 @@ import pynecone as pc
 
 from .states import *
 
+def loginByKeys() -> pc.Component:
+    return pc.stack(
+        pc.center(
+        pc.heading(f"Welcome to text-based-rpg!")),
+        
+        pc.center(
 
+        pc.form(
+            pc.input(
+                placeholder='key1',
+                id='key1',
+                type_='password'
+                ),
+            pc.input(
+                placeholder='key2',
+                id='key2',
+                type_='password'
+            ),
+            pc.button('Login', type_='submit'),
+            on_submit=LoginState.login
+
+        )
+    ))
 @pc.route('/game/', on_load=QueryParamsParsing.verify_keys_and_cache)
 def game() -> pc.Component:
     
@@ -60,7 +82,9 @@ app = pc.App(state=BaseState)
 
 app.add_page(start_game, '/start/')
 
-app.add_page(start_game, '/')
+app.add_page(loginByKeys, '/')
+
+app.add_page(loginByKeys, '/login/')
 
 app.add_custom_404_page(page404)
 app.compile()
