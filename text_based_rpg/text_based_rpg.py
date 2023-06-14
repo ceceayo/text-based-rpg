@@ -1,6 +1,7 @@
 """Welcome to Pynecone! This file outlines the steps to create a basic app."""
 import pynecone as pc
 from .states import *
+from .game import *
 def game() -> pc.Component:
     return pc.center(
         pc.vstack(

@@ -1,5 +1,7 @@
 import pynecone as pc
 import string, secrets
+from typing import Optional
+from .game import *
 class BaseState(pc.State):
     '''
     Represents the BaseState, this makes it possible in the future to create multiple States.
@@ -44,3 +46,7 @@ class UserInformation(BaseState):
         del result_str
         result_str = ''.join(secrets.choice(letters) for _ in range(64))
         self.key2 = result_str
+
+class GameInformation(BaseState):
+    _game: Optional[Game]
+    _started: bool
